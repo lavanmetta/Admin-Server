@@ -1,29 +1,29 @@
-const { verify } = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const express = require("express");
-var cookieParser = require("cookie-parser");
+
+const cookieParser = require("cookie-parser");
 const app = express();
 app.use(cookieParser());
 
+
+const secret_key = process.env.JWT_SECRET;
+
 const validateToken = (req, res, next) => {
-
-  const token = req.header.accessToken
   
- // Step 1: Get the token from the cookie
-
-  if (!token) return res.json({ error: "User not logged in!" });
-// Step 2: Check if the token exists
+ const accessToken =  req.headers.authorization
+  console.log(accessToken)
+  if (!accessToken) {
+    return res.status(401).json({ error: "Access Denied, No Token Provided" });
+  }
 
   try {
-    // Step 3: Verify the token
-    const validToken = verify(token, "TonmetriSecret")
-    if (validToken) {
-      return next();
-    }
-  } catch (err) {
-    return res.json({ error: err });
+    const decoded = jwt.verify(accessToken, secret_key);
+    req.username = decoded.username;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid Token" });
   }
 };
-
 
 
 

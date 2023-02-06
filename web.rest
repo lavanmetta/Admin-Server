@@ -1,0 +1,5 @@
+GET http://localhost:3001/auth/admin-link
+
+###
+
+GET http://localhost:3001/auth/test
